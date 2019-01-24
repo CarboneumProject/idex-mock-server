@@ -322,4 +322,44 @@ router.post('/returnNextNonce', async (req, res, next) => {
   }
 });
 
+/*
+* Contract backend endpoint.
+*
+*/
+router.post('/order', async (req, res, next) => {
+  try {
+    // Keep order to smart contract.
+  } catch (e) {
+    console.error(e);
+    return res.send({'status': 'no','message': e.message});
+  }
+});
+
+router.post('/cancel', async (req, res, next) => {
+  try {
+    // Keep order to smart contract.
+  } catch (e) {
+    console.error(e);
+    return res.send({'status': 'no','message': e.message});
+  }
+});
+
+router.post('/trade', async (req, res, next) => {
+  try {
+    // Keep order to smart contract.
+  } catch (e) {
+    console.error(e);
+    return res.send({'status': 'no','message': e.message});
+  }
+});
+
+router.post('/withdraw', async (req, res, next) => {
+  try {
+    // Keep order to smart contract.
+  } catch (e) {
+    console.error(e);
+    return res.send({'status': 'no','message': e.message});
+  }
+});
+
 module.exports = router;
