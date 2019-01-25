@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const currency = require('../data/currencies');
+const exchange = require('../model/exchange');
 
 router.post('/returnTicker', async (req, res, next) => {
   try {
-
     res.send({
       "last": "0.000981",
       "high": "0.0010763",
@@ -32,16 +32,7 @@ router.post('/returnCurrencies', async (req, res, next) => {
 
 router.post('/return24Volume', async (req, res, next) => {
   try {
-
     res.send({
-      "ETH_REP": {
-        "ETH": "1.3429046745",
-        "REP": "105.29046745"
-      },
-      "ETH_DVIP": {
-        "ETH": "4",
-        "DVIP": "4"
-      },
       "ETH_C8": {
         "ETH": "4",
         "C8": "4"
@@ -58,9 +49,8 @@ router.post('/returnBalances', async (req, res, next) => {
   try {
 
     res.send({
-      "ETH": "25.55306545",
-      "DVIP": "200000000.31012358",
-      "C8": "8616000.31012358"
+      "ETH": await exchange.balanceOf('0x0000000000000000000000000000000000000000', req.body['address']),
+      "C8": await exchange.balanceOf('0xd42debe4edc92bd5a3fbb4243e1eccf6d63a4a5d', req.body['address']),
     });
   } catch (e) {
     console.error(e);
@@ -72,12 +62,12 @@ router.post('/returnCompleteBalances', async (req, res, next) => {
   try {
 
     res.send({
-      "REP": {
-        "available": "25.55306545",
+      "ETH": {
+        "available": await exchange.balanceOf('0x0000000000000000000000000000000000000000', req.body['address']),
         "onOrders": "0"
       },
       "C8": {
-        "available": "8616000.31012358",
+        "available": await exchange.balanceOf('0xd42debe4edc92bd5a3fbb4243e1eccf6d63a4a5d', req.body['address']),
         "onOrders": "0"
       }
     });
@@ -307,67 +297,109 @@ router.post('/returnNextNonce', async (req, res, next) => {
 */
 router.post('/order', async (req, res, next) => {
   try {
-    // Keep order to smart contract.
-    res.send({
-      "timestamp": 1516415000,
-      "market": "ETH_AURA",
-      "orderNumber": 2101,
-      "orderHash": "0x3fe808be7b5df3747e5534056e9ff45ead5b1fcace430d7b4092e5fcd7161e21",
-      "price": "0.000129032258064516",
-      "amount": "3100",
-      "total": "0.4",
-      "type": "buy",
-      "params": {
-        "tokenBuy": "0x7c5a0ce9267ed19b22f8cae653f198e3e8daf098",
-        "buyPrecision": 18,
-        "amountBuy": "3100000000000000000000",
-        "tokenSell": "0x0000000000000000000000000000000000000000",
-        "sellPrecision": 18,
-        "amountSell": "400000000000000000",
-        "expires": 100000,
-        "nonce": "1",
-        "user": "0x57b080554ebafc8b17f4a6fd090c18fc8c9188a0"
-      }
-    });
+    let timeStamp = `${Date.now()}`;
+    let side = 'buy';
+    if (req.body['tokenSell'] === '0x0000000000000000000000000000000000000') {
+      side = 'sell';
+    }
+    res.send(
+      {
+        "timestamp": timeStamp,
+        "market": "ETH_C8",
+        "orderNumber": timeStamp,
+        "orderHash": "0x3fe808be7b5df3747e5534056e9ff45ead5b1fcace430d7b4092e5fcd7161e21",
+        "price": "0.000129032258064516",
+        "amount": "3100",
+        "total": "0.4",
+        "type": side,
+        "params": {
+          "tokenBuy": req.body['tokenBuy'],
+          "buyPrecision": 18,
+          "amountBuy": req.body['amountBuy'],
+          "tokenSell": req.body['tokenSell'],
+          "sellPrecision": 18,
+          "amountSell": req.body['amountSell'],
+          "expires": 100000,
+          "nonce": req.body['nonce'],
+          "user": req.body['address']
+        }
+      });
+
+    let matchOrder = exchange.createOrder(
+      req.body['tokenSell'],
+      req.body['amountSell'],
+      req.body['tokenBuy'],
+      req.body['amountBuy']
+    );
+
+    let tradeValues = [
+      req.body['amountBuy'],
+      req.body['amountSell'],
+      req.body['expires'],
+      req.body['nonce'],
+      req.body['amount'],
+      req.body['tradeNonce'],
+      req.body['feeMake'],
+      req.body['feeTake'],
+    ];
+
+    let tradeAddresses = [
+      req.body['tokenBuy'],
+      req.body['tokenSell'],
+      req.body['address'],
+      matchOrder['address'],
+    ];
+
+    let v = [
+      req.body['v'],
+      matchOrder['v'],
+    ];
+
+    let rs = [
+      req.body['r'],
+      req.body['s'],
+      matchOrder['r'],
+      matchOrder['s'],
+    ];
+
+    let ret = exchange.trade(tradeValues, tradeAddresses, v, rs);
+    console.log(ret);
   } catch (e) {
     console.error(e);
-    return res.send({'status': 'no','message': e.message});
+    return res.send({'status': 'no', 'message': e.message});
   }
 });
 
 router.post('/cancel', async (req, res, next) => {
   try {
-    // Keep order to smart contract.
     res.send({
-      "nonce": "5000"
+      "message": "Not implement yet"
     });
   } catch (e) {
     console.error(e);
-    return res.send({'status': 'no','message': e.message});
+    return res.send({'status': 'no', 'message': e.message});
   }
 });
 
 router.post('/trade', async (req, res, next) => {
   try {
-    // Keep order to smart contract.
     res.send({
-      "nonce": "5000"
+      "message": "Not implement yet"
     });
   } catch (e) {
     console.error(e);
-    return res.send({'status': 'no','message': e.message});
+    return res.send({'status': 'no', 'message': e.message});
   }
 });
 
 router.post('/withdraw', async (req, res, next) => {
   try {
-    // Keep order to smart contract.
     res.send({
-      "nonce": "5000"
+      "message": "Not implement yet"
     });
   } catch (e) {
     console.error(e);
-    return res.send({'status': 'no','message': e.message});
+    return res.send({'status': 'no', 'message': e.message});
   }
 });
 
