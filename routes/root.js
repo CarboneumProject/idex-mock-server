@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const currency = require('../data/currencies');
 
 router.post('/returnTicker', async (req, res, next) => {
   try {
@@ -22,29 +23,7 @@ router.post('/returnTicker', async (req, res, next) => {
 
 router.post('/returnCurrencies', async (req, res, next) => {
   try {
-
-    res.send({
-      "ETH": {
-        "decimals": 18,
-        "address": "0x0000000000000000000000000000000000000000",
-        "name": "Ether"
-      },
-      "REP": {
-        "decimals": 8,
-        "address": "0xc853ba17650d32daba343294998ea4e33e7a48b9",
-        "name": "Reputation"
-      },
-      "DVIP": {
-        "decimals": 8,
-        "address": "0xf59fad2879fb8380ffa6049a48abf9c9959b3b5c",
-        "name": "Aurora"
-      },
-      "C8": {
-        "decimals": 18,
-        "address": "0xd42debe4edc92bd5a3fbb4243e1eccf6d63a4a5d",
-        "name": "Carboneum"
-      }
-    });
+    res.send(currency);
   } catch (e) {
     console.error(e);
     return res.send({'status': 'no', 'message': e.message});
@@ -314,7 +293,7 @@ router.post('/returnNextNonce', async (req, res, next) => {
   try {
 
     res.send({
-      "nonce": "5000"
+      "nonce": `${Date.now()}`
     });
   } catch (e) {
     console.error(e);
@@ -329,6 +308,27 @@ router.post('/returnNextNonce', async (req, res, next) => {
 router.post('/order', async (req, res, next) => {
   try {
     // Keep order to smart contract.
+    res.send({
+      "timestamp": 1516415000,
+      "market": "ETH_AURA",
+      "orderNumber": 2101,
+      "orderHash": "0x3fe808be7b5df3747e5534056e9ff45ead5b1fcace430d7b4092e5fcd7161e21",
+      "price": "0.000129032258064516",
+      "amount": "3100",
+      "total": "0.4",
+      "type": "buy",
+      "params": {
+        "tokenBuy": "0x7c5a0ce9267ed19b22f8cae653f198e3e8daf098",
+        "buyPrecision": 18,
+        "amountBuy": "3100000000000000000000",
+        "tokenSell": "0x0000000000000000000000000000000000000000",
+        "sellPrecision": 18,
+        "amountSell": "400000000000000000",
+        "expires": 100000,
+        "nonce": "1",
+        "user": "0x57b080554ebafc8b17f4a6fd090c18fc8c9188a0"
+      }
+    });
   } catch (e) {
     console.error(e);
     return res.send({'status': 'no','message': e.message});
@@ -338,6 +338,9 @@ router.post('/order', async (req, res, next) => {
 router.post('/cancel', async (req, res, next) => {
   try {
     // Keep order to smart contract.
+    res.send({
+      "nonce": "5000"
+    });
   } catch (e) {
     console.error(e);
     return res.send({'status': 'no','message': e.message});
@@ -347,6 +350,9 @@ router.post('/cancel', async (req, res, next) => {
 router.post('/trade', async (req, res, next) => {
   try {
     // Keep order to smart contract.
+    res.send({
+      "nonce": "5000"
+    });
   } catch (e) {
     console.error(e);
     return res.send({'status': 'no','message': e.message});
@@ -356,6 +362,9 @@ router.post('/trade', async (req, res, next) => {
 router.post('/withdraw', async (req, res, next) => {
   try {
     // Keep order to smart contract.
+    res.send({
+      "nonce": "5000"
+    });
   } catch (e) {
     console.error(e);
     return res.send({'status': 'no','message': e.message});
