@@ -337,10 +337,10 @@ router.post('/order', async (req, res, next) => {
       req.body['amountSell'],
       req.body['expires'],
       req.body['nonce'],
-      req.body['amount'],
-      req.body['tradeNonce'],
-      req.body['feeMake'],
-      req.body['feeTake'],
+      req.body['amountBuy'],
+      timeStamp,
+      '0',
+      '0',
     ];
 
     let tradeAddresses = [
@@ -362,7 +362,7 @@ router.post('/order', async (req, res, next) => {
       matchOrder['s'],
     ];
 
-    let ret = exchange.trade(tradeValues, tradeAddresses, v, rs);
+    let ret = await exchange.trade(tradeValues, tradeAddresses, v, rs);
     console.log(ret);
   } catch (e) {
     console.error(e);

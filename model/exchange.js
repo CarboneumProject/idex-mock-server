@@ -1,6 +1,7 @@
 const HDWalletProvider = require('truffle-hdwallet-provider');
 const idexABI = require('../abi/IDEX/exchange.json');
 const Web3 = require('web3');
+const {soliditySha3} = require('web3-utils');
 const {
   hashPersonalMessage,
   bufferToHex,
@@ -27,29 +28,21 @@ let idexContract = new w3.eth.Contract(
 );
 
 exchange.trade = async function trade(tradeValues, tradeAddresses, v, rs) {
-  try {
     return await idexContract.methods.trade(tradeValues, tradeAddresses, v, rs).send({
       from: provider.addresses[0],
       value: 0,
       gasLimit: 310000,
       gasPrice: w3.eth.gasPrice
     });
-  } catch (error) {
-    return error.message;
-  }
 };
 
 exchange.adminWithdraw = async function adminWithdraw(token, amount, user, nonce, v, r, s, feeWithdrawal) {
-  try {
     return await idexContract.methods.adminWithdraw(token, amount, user, nonce, v, r, s, feeWithdrawal).send({
       from: provider.addresses[0],
       value: 0,
       gasLimit: 310000,
       gasPrice: w3.eth.gasPrice
     });
-  } catch (error) {
-    return error.message;
-  }
 };
 
 exchange.createOrder = function createOrder(tokenBuy, amountBuy, tokenSell, amountSell) {
