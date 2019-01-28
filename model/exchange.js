@@ -22,6 +22,7 @@ const exchange = {};
 const provider = infuraProvider(process.env.NETWORK || 'rinkeby');
 
 let w3 = new Web3(provider);
+console.log(w3.version);
 let idexContract = new w3.eth.Contract(
   idexABI,
   contractAddress,
@@ -46,7 +47,7 @@ exchange.adminWithdraw = async function adminWithdraw(token, amount, user, nonce
 };
 
 exchange.createOrder = function createOrder(tokenBuy, amountBuy, tokenSell, amountSell) {
-  let expires = 0;
+  let expires = 100000;
   let address = provider.addresses[0];
   let privateKeyBuffer = provider.wallets[address]['_privKey'];
   let nonce = `${Date.now()}`;

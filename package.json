@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "0x.js": "2.0.6",
+    "@babel/runtime": "^7.3.1",
     "abi-decoder": "^1.2.0",
     "axios": "^0.18.0",
     "babel-polyfill": "^6.23.0",
