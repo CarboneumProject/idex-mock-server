@@ -28,21 +28,51 @@ let idexContract = new w3.eth.Contract(
 );
 
 exchange.trade = async function trade(tradeValues, tradeAddresses, v, rs) {
-    return await idexContract.methods.trade(tradeValues, tradeAddresses, v, rs).send({
-      from: provider.addresses[0],
-      value: 0,
-      gasLimit: 310000,
-      gasPrice: w3.eth.gasPrice
-    });
+  return await idexContract.methods.trade(tradeValues, tradeAddresses, v, rs).send({
+    from: provider.addresses[0],
+    value: 0,
+    gasLimit: 310000,
+    gasPrice: w3.eth.gasPrice
+  });
 };
 
 exchange.adminWithdraw = async function adminWithdraw(token, amount, user, nonce, v, r, s, feeWithdrawal) {
-    return await idexContract.methods.adminWithdraw(token, amount, user, nonce, v, r, s, feeWithdrawal).send({
-      from: provider.addresses[0],
-      value: 0,
-      gasLimit: 310000,
-      gasPrice: w3.eth.gasPrice
-    });
+  return await idexContract.methods.adminWithdraw(token, amount, user, nonce, v, r, s, feeWithdrawal).send({
+    from: provider.addresses[0],
+    value: 0,
+    gasLimit: 310000,
+    gasPrice: w3.eth.gasPrice
+  });
+};
+
+exchange.orderHash = function orderHash(tokenBuy, amountBuy, tokenSell, amountSell, expires, nonce, address) {
+  const raw = soliditySha3({
+    t: 'address',
+    v: contractAddress
+  }, {
+    t: 'address',
+    v: tokenBuy
+  }, {
+    t: 'uint256',
+    v: amountBuy
+  }, {
+    t: 'address',
+    v: tokenSell
+  }, {
+    t: 'uint256',
+    v: amountSell
+  }, {
+    t: 'uint256',
+    v: expires
+  }, {
+    t: 'uint256',
+    v: nonce
+  }, {
+    t: 'address',
+    v: address
+  });
+  const salted = hashPersonalMessage(toBuffer(raw));
+  return bufferToHex(salted);
 };
 
 exchange.createOrder = function createOrder(tokenBuy, amountBuy, tokenSell, amountSell) {
@@ -93,14 +123,15 @@ exchange.createOrder = function createOrder(tokenBuy, amountBuy, tokenSell, amou
     expires: expires,
     v: v,
     r: r,
-    s: s
+    s: s,
+    orderHash: bufferToHex(salted)
   }
 };
 
 exchange.balanceOf = async function balanceOf(token, user) {
   let balance = await idexContract.methods.balanceOf(token, user).call();
   console.log(balance);
-  return  balance / Web3.utils.toBN(Math.pow(10, 18));
+  return balance / Web3.utils.toBN(Math.pow(10, 18));
 };
 
 module.exports = exchange;

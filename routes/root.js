@@ -342,12 +342,21 @@ router.post('/order', async (req, res, next) => {
     console.log(matchOrder);
     let ret = await exchange.trade(tradeValues, tradeAddresses, v, rs);
     console.log(ret);
+    let orderHash = exchange.orderHash(
+      req.body['tokenBuy'],
+      req.body['amountBuy'],
+      req.body['tokenSell'],
+      req.body['amountSell'],
+      req.body['expires'],
+      req.body['nonce'],
+      req.body['address']
+    );
     res.send(
       {
         "timestamp": timeStamp,
         "market": "ETH_C8",
         "orderNumber": timeStamp,
-        "orderHash": "0x3fe808be7b5df3747e5534056e9ff45ead5b1fcace430d7b4092e5fcd7161e21",
+        "orderHash": orderHash,
         "price": req.body['amountBuy'] / req.body['amountSell'],
         "amount": "3100",
         "total": "0.4",
