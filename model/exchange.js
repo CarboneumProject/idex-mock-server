@@ -17,12 +17,11 @@ const infuraProvider = network => providerWithMnemonic(
   `https://${network}.infura.io/${process.env.INFURA_API_KEY}`,
 );
 
-const contractAddress = process.env.IDEX_ADDRESS || '0x222252b06932a84099ba3b39b17368683c13d730';
+const contractAddress = process.env.IDEX_ADDRESS || '0xb583ef86fbaa630a67b62435ee797cb5ae4cc7e1';
 const exchange = {};
 const provider = infuraProvider(process.env.NETWORK || 'rinkeby');
 
 let w3 = new Web3(provider);
-console.log(w3.version);
 let idexContract = new w3.eth.Contract(
   idexABI,
   contractAddress,
@@ -47,7 +46,7 @@ exchange.adminWithdraw = async function adminWithdraw(token, amount, user, nonce
 };
 
 exchange.createOrder = function createOrder(tokenBuy, amountBuy, tokenSell, amountSell) {
-  let expires = 100000;
+  let expires = 0;
   let address = provider.addresses[0];
   let privateKeyBuffer = provider.wallets[address]['_privKey'];
   let nonce = `${Date.now()}`;

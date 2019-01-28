@@ -302,28 +302,6 @@ router.post('/order', async (req, res, next) => {
     if (req.body['tokenSell'] === '0x0000000000000000000000000000000000000') {
       side = 'sell';
     }
-    res.send(
-      {
-        "timestamp": timeStamp,
-        "market": "ETH_C8",
-        "orderNumber": timeStamp,
-        "orderHash": "0x3fe808be7b5df3747e5534056e9ff45ead5b1fcace430d7b4092e5fcd7161e21",
-        "price": "0.000129032258064516",
-        "amount": "3100",
-        "total": "0.4",
-        "type": side,
-        "params": {
-          "tokenBuy": req.body['tokenBuy'],
-          "buyPrecision": 18,
-          "amountBuy": req.body['amountBuy'],
-          "tokenSell": req.body['tokenSell'],
-          "sellPrecision": 18,
-          "amountSell": req.body['amountSell'],
-          "expires": 100000,
-          "nonce": req.body['nonce'],
-          "user": req.body['address']
-        }
-      });
 
     let matchOrder = exchange.createOrder(
       req.body['tokenSell'],
@@ -338,7 +316,7 @@ router.post('/order', async (req, res, next) => {
       req.body['expires'],
       req.body['nonce'],
       req.body['amountBuy'],
-      timeStamp,
+      matchOrder['nonce'],
       '0',
       '0',
     ];
@@ -361,11 +339,34 @@ router.post('/order', async (req, res, next) => {
       matchOrder['r'],
       matchOrder['s'],
     ];
-
+    console.log(matchOrder);
     let ret = await exchange.trade(tradeValues, tradeAddresses, v, rs);
     console.log(ret);
+    res.send(
+      {
+        "timestamp": timeStamp,
+        "market": "ETH_C8",
+        "orderNumber": timeStamp,
+        "orderHash": "0x3fe808be7b5df3747e5534056e9ff45ead5b1fcace430d7b4092e5fcd7161e21",
+        "price": req.body['amountBuy'] / req.body['amountSell'],
+        "amount": "3100",
+        "total": "0.4",
+        "type": side,
+        "params": {
+          "tokenBuy": req.body['tokenBuy'],
+          "buyPrecision": 18,
+          "amountBuy": req.body['amountBuy'],
+          "tokenSell": req.body['tokenSell'],
+          "sellPrecision": 18,
+          "amountSell": req.body['amountSell'],
+          "expires": 100000,
+          "nonce": req.body['nonce'],
+          "user": req.body['address']
+        }
+      });
   } catch (e) {
     console.error(e);
+    res.status(500);
     return res.send({'status': 'no', 'message': e.message});
   }
 });
