@@ -1,4 +1,5 @@
 const WebSocket = require('ws');
+const exchange = require('./model/exchange');
 
 const wss = new WebSocket.Server({
   port: 8881,
@@ -24,7 +25,7 @@ const wss = new WebSocket.Server({
 });
 
 wss.on('connection', function connection(ws) {
-  ws.on('message', function incoming(data) {
+  ws.on('message', async function incoming(data) {
     console.log(data);
     let payload = JSON.parse(data);
     if (payload['method'] === 'handshake') {
@@ -37,10 +38,10 @@ wss.on('connection', function connection(ws) {
       }));
     } else if (payload['method'] === 'makeWithdrawal') {
       // TODO withdraw from IDEX contract.
-      let user_balance = 400000000000000000;
-      // TODO Get User balance from contract.
+      let user_balance = await exchange.balanceOfWei(payload['payload']['token'], payload['payload']['user']);
+
       if(parseInt(payload['payload']['amount']) > user_balance){
-        ws.send(JSON.stringify({
+        await ws.send(JSON.stringify({
           "sid": "iws:SJblzzUZDmN",
           "rid": "0b784e91-1fbb-11e9-b87a-7beb6e9dec1a",
           "result": "success",
@@ -52,7 +53,7 @@ wss.on('connection', function connection(ws) {
           }
         }));
       } else if (parseInt(payload['payload']['amount']) > 40000000000000000) {
-        ws.send(JSON.stringify({
+        await ws.send(JSON.stringify({
           "sid": "iws:SJblzzUZDmN",
           "rid": "0b784e91-1fbb-11e9-b87a-7beb6e9dec1a",
           "result": "success",
@@ -61,7 +62,7 @@ wss.on('connection', function connection(ws) {
           "payload": {}
         }));
       } else {
-        ws.send(JSON.stringify({
+        await ws.send(JSON.stringify({
           "sid": "iws:SJblzzUZDmN",
           "rid": "0b784e91-1fbb-11e9-b87a-7beb6e9dec1a",
           "result": "success",
