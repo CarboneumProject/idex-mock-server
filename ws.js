@@ -37,22 +37,42 @@ wss.on('connection', function connection(ws) {
       }));
     } else if (payload['method'] === 'makeWithdrawal') {
       // TODO withdraw from IDEX contract.
-      ws.send(JSON.stringify({
-        "sid": "iws:SJblzzUZDmN",
-        "rid": "0b784e91-1fbb-11e9-b87a-7beb6e9dec1a",
-        "result": "success",
-        "format": "json",
-        "method": "returnValue",
-        "payload": [{
-          "id": 1297199,
-          "user": "0x6e4891e67345549d8d63592f2e11afaebf66238d",
-          "token": "0x0000000000000000000000000000000000000000",
-          "amount": "296900000000000000",
-          "transactionHash": "0x0bb1948328653242f49bfef4bd03252ea54676f3dc005ddcd42199076458043b",
-          "createdAt": "2019-01-17T10:58:36.000Z",
-          "updatedAt": "2019-01-17T10:58:36.000Z"
-        }]
-      }));
+      let user_balance = 400000000000000000;
+      // TODO Get User balance from contract.
+      if(parseInt(payload['payload']['amount']) > user_balance){
+        ws.send(JSON.stringify({
+          "sid": "iws:SJblzzUZDmN",
+          "rid": "0b784e91-1fbb-11e9-b87a-7beb6e9dec1a",
+          "result": "success",
+          "format": "json",
+          "method": "returnValue",
+          "payload": {
+            "name": "TradeError",
+            "message": '{"en":"You cannot withdraw more than your balance."}',
+          }
+        }));
+      } else if (parseInt(payload['payload']['amount']) > 40000000000000000) {
+        ws.send(JSON.stringify({
+          "sid": "iws:SJblzzUZDmN",
+          "rid": "0b784e91-1fbb-11e9-b87a-7beb6e9dec1a",
+          "result": "success",
+          "format": "json",
+          "method": "returnValue",
+          "payload": {}
+        }));
+      } else {
+        ws.send(JSON.stringify({
+          "sid": "iws:SJblzzUZDmN",
+          "rid": "0b784e91-1fbb-11e9-b87a-7beb6e9dec1a",
+          "result": "success",
+          "format": "json",
+          "method": "returnValue",
+          "payload": {
+            "name": "APIError",
+            "message": "Minimum withdrawal of 0.04 ETH required (met X percent of minimum). Please enter a higher amount.",
+          }
+        }));
+      }
     }
   });
 });
