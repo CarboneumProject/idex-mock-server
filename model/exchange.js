@@ -146,4 +146,10 @@ exchange.balanceOf = async function balanceOf(token, user) {
   return balance / Web3.utils.toBN(Math.pow(10, 18));
 };
 
+exchange.balanceOfWei = async function balanceOf(token, user) {
+  let balance = await idexContract.methods.balanceOf(token, user).call();
+  return balance;
+};
+
+
 module.exports = exchange;
