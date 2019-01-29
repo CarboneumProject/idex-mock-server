@@ -71,8 +71,7 @@ exchange.orderHash = function orderHash(tokenBuy, amountBuy, tokenSell, amountSe
     t: 'address',
     v: address
   });
-  const salted = hashPersonalMessage(toBuffer(raw));
-  return bufferToHex(salted);
+  return bufferToHex(toBuffer(raw));
 };
 
 exchange.createOrder = function createOrder(tokenBuy, amountBuy, tokenSell, amountSell) {
@@ -81,32 +80,8 @@ exchange.createOrder = function createOrder(tokenBuy, amountBuy, tokenSell, amou
   let privateKeyBuffer = provider.wallets[address]['_privKey'];
   let nonce = `${Date.now()}`;
 
-  const raw = soliditySha3({
-    t: 'address',
-    v: contractAddress
-  }, {
-    t: 'address',
-    v: tokenBuy
-  }, {
-    t: 'uint256',
-    v: amountBuy
-  }, {
-    t: 'address',
-    v: tokenSell
-  }, {
-    t: 'uint256',
-    v: amountSell
-  }, {
-    t: 'uint256',
-    v: expires
-  }, {
-    t: 'uint256',
-    v: nonce
-  }, {
-    t: 'address',
-    v: address
-  });
-  const salted = hashPersonalMessage(toBuffer(raw));
+  const orderHashHex = exchange.orderHash(tokenBuy, amountBuy, tokenSell, amountSell, expires, nonce, address);
+  const salted = hashPersonalMessage(toBuffer(orderHashHex));
   const {
     v,
     r,
@@ -124,7 +99,44 @@ exchange.createOrder = function createOrder(tokenBuy, amountBuy, tokenSell, amou
     v: v,
     r: r,
     s: s,
-    orderHash: bufferToHex(salted)
+    orderHash: orderHashHex,
+    messageHash: bufferToHex(salted)
+  }
+};
+
+exchange.createTrade = function createTrade(orderHash, amount) {
+  let address = provider.addresses[0];
+  let taker = address;
+  let privateKeyBuffer = provider.wallets[address]['_privKey'];
+  let nonce = `${Date.now()}`;
+
+  const raw = soliditySha3({
+    t: 'bytes32',
+    v: orderHash
+  },  {
+    t: 'uint256',
+    v: amount
+  }, {
+    t: 'address',
+    v: taker
+  }, {
+    t: 'uint256',
+    v: nonce
+  });
+  const salted = hashPersonalMessage(toBuffer(raw));
+  const {
+    v,
+    r,
+    s
+  } = mapValues(ecsign(salted, privateKeyBuffer), (value, key) => key === 'v' ? value : bufferToHex(value));
+
+  return {
+    taker: taker,
+    nonce: nonce,
+    v: v,
+    r: r,
+    s: s,
+    tradeHash: bufferToHex(toBuffer(raw))
   }
 };
 
