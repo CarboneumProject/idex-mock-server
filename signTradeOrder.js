@@ -15,7 +15,7 @@ console.log(JSON.stringify(order, null, 2));
 let v = bufferToHex(order['v']);
 let r = order['r'];
 let s = order['s'];
-let messageHash = order['orderHash'];
+let messageHash = order['messageHash'];
 let address = w3.eth.accounts.recover({
   messageHash: messageHash,
   v: v,

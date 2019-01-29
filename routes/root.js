@@ -302,46 +302,6 @@ router.post('/order', async (req, res, next) => {
     if (req.body['tokenSell'] === '0x0000000000000000000000000000000000000') {
       side = 'sell';
     }
-
-    let matchOrder = exchange.createOrder(
-      req.body['tokenSell'],
-      req.body['amountSell'],
-      req.body['tokenBuy'],
-      req.body['amountBuy']
-    );
-
-    let tradeValues = [
-      req.body['amountBuy'],
-      req.body['amountSell'],
-      req.body['expires'],
-      req.body['nonce'],
-      req.body['amountBuy'],
-      matchOrder['nonce'],
-      '0',
-      '0',
-    ];
-
-    let tradeAddresses = [
-      req.body['tokenBuy'],
-      req.body['tokenSell'],
-      req.body['address'],
-      matchOrder['address'],
-    ];
-
-    let v = [
-      req.body['v'],
-      matchOrder['v'],
-    ];
-
-    let rs = [
-      req.body['r'],
-      req.body['s'],
-      matchOrder['r'],
-      matchOrder['s'],
-    ];
-    console.log(matchOrder);
-    let ret = await exchange.trade(tradeValues, tradeAddresses, v, rs);
-    console.log(ret);
     let orderHash = exchange.orderHash(
       req.body['tokenBuy'],
       req.body['amountBuy'],
@@ -351,6 +311,41 @@ router.post('/order', async (req, res, next) => {
       req.body['nonce'],
       req.body['address']
     );
+
+    let trade = exchange.createTrade(orderHash, req.body['amountBuy']);
+
+    let tradeValues = [
+      req.body['amountBuy'],
+      req.body['amountSell'],
+      req.body['expires'],
+      req.body['nonce'],
+      req.body['amountBuy'],
+      trade['nonce'],
+      '0',
+      '0',
+    ];
+
+    let tradeAddresses = [
+      req.body['tokenBuy'],
+      req.body['tokenSell'],
+      req.body['address'],
+      trade['taker'],
+    ];
+
+    let v = [
+      req.body['v'],
+      trade['v'],
+    ];
+
+    let rs = [
+      req.body['r'],
+      req.body['s'],
+      trade['r'],
+      trade['s'],
+    ];
+    console.log(trade);
+    let ret = await exchange.trade(tradeValues, tradeAddresses, v, rs);
+    console.log(ret);
     res.send(
       {
         "timestamp": timeStamp,
