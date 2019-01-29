@@ -74,6 +74,26 @@ exchange.orderHash = function orderHash(tokenBuy, amountBuy, tokenSell, amountSe
   return bufferToHex(toBuffer(raw));
 };
 
+exchange.withdrawHash = function withdrawHash(address, amount, token, nonce) {
+  const raw = soliditySha3({
+    t: 'address',
+    v: contractAddress
+  }, {
+    t: 'address',
+    v: token
+  }, {
+    t: 'uint256',
+    v: amount
+  }, {
+    t: 'uint256',
+    v: nonce
+  }, {
+    t: 'address',
+    v: address
+  });
+  return bufferToHex(toBuffer(raw));
+};
+
 exchange.createOrder = function createOrder(tokenBuy, amountBuy, tokenSell, amountSell) {
   let expires = 0;
   let address = provider.addresses[0];
@@ -137,6 +157,42 @@ exchange.createTrade = function createTrade(orderHash, amount) {
     r: r,
     s: s,
     tradeHash: bufferToHex(toBuffer(raw))
+  }
+};
+
+exchange.createWithdraw = function createWithdraw(token, amount) {
+  let address = provider.addresses[0];
+  let privateKeyBuffer = provider.wallets[address]['_privKey'];
+  let nonce = `${Date.now()}`;
+
+  const raw = soliditySha3({
+    t: 'address',
+    v: address
+  }, {
+    t: 'uint256',
+    v: amount
+  }, {
+    t: 'bytes32',
+    v: token
+  }, {
+    t: 'uint256',
+    v: nonce
+  });
+  const orderHashHex = exchange.withdrawHash(address, amount, token, nonce);
+  const salted = hashPersonalMessage(toBuffer(orderHashHex));
+  const {
+    v,
+    r,
+    s
+  } = mapValues(ecsign(salted, privateKeyBuffer), (value, key) => key === 'v' ? value : bufferToHex(value));
+
+  return {
+    address: address,
+    nonce: nonce,
+    v: v,
+    r: r,
+    s: s,
+    messageHash: bufferToHex(salted)
   }
 };
 
