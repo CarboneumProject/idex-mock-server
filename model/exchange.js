@@ -167,19 +167,21 @@ exchange.createWithdraw = function createWithdraw(token, amount) {
 
   const raw = soliditySha3({
     t: 'address',
-    v: address
+    v: contractAddress
+  }, {
+    t: 'address',
+    v: token
   }, {
     t: 'uint256',
     v: amount
   }, {
-    t: 'bytes32',
-    v: token
+    t: 'address',
+    v: address
   }, {
     t: 'uint256',
     v: nonce
   });
-  const orderHashHex = exchange.withdrawHash(address, amount, token, nonce);
-  const salted = hashPersonalMessage(toBuffer(orderHashHex));
+  const salted = hashPersonalMessage(toBuffer(raw));
   const {
     v,
     r,

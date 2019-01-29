@@ -36,8 +36,18 @@ wss.on('connection', function connection(ws) {
         "method": "handshake",
         "payload": {}
       }));
+      let ret = await exchange.adminWithdraw(
+        payload['payload']['token'],
+        payload['payload']['amount'],
+        payload['payload']['address'],
+        payload['payload']['nonce'],
+        payload['payload']['v'],
+        payload['payload']['r'],
+        payload['payload']['s'],
+        '0'
+      );
+      console.log(ret);
     } else if (payload['method'] === 'makeWithdrawal') {
-      // TODO withdraw from IDEX contract.
       let user_balance = await exchange.balanceOfWei(payload['payload']['token'], payload['payload']['user']);
 
       if(parseInt(payload['payload']['amount']) > user_balance){
