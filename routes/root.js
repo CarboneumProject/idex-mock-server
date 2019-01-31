@@ -49,8 +49,8 @@ router.post('/returnBalances', async (req, res, next) => {
   try {
 
     res.send({
-      "ETH": await exchange.balanceOf('0x0000000000000000000000000000000000000000', req.body['address'].toString()),
-      "C8": await exchange.balanceOf('0xd42debe4edc92bd5a3fbb4243e1eccf6d63a4a5d', req.body['address'].toString()),
+      "ETH": (await exchange.balanceOf('0x0000000000000000000000000000000000000000', req.body['address'])).toString(),
+      "C8": (await exchange.balanceOf('0xd42debe4edc92bd5a3fbb4243e1eccf6d63a4a5d', req.body['address'])).toString(),
     });
   } catch (e) {
     console.error(e);
