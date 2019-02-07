@@ -283,7 +283,7 @@ router.post('/returnNextNonce', async (req, res, next) => {
   try {
 
     res.send({
-      "nonce": parseInt(`${Date.now()}`)
+      "nonce": parseInt(`${Date.now()}`.substring(2,11))
     });
   } catch (e) {
     console.error(e);
