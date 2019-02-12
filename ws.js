@@ -36,6 +36,7 @@ wss.on('connection', function connection(ws) {
         "method": "handshake",
         "payload": {}
       }));
+    } else if (payload['method'] === 'makeWithdrawal') {
       let ret = await exchange.adminWithdraw(
         payload['payload']['token'],
         payload['payload']['amount'],
@@ -47,7 +48,6 @@ wss.on('connection', function connection(ws) {
         '0'
       );
       console.log(ret);
-    } else if (payload['method'] === 'makeWithdrawal') {
       let user_balance = await exchange.balanceOfWei(payload['payload']['token'], payload['payload']['user']);
 
       if(parseInt(payload['payload']['amount']) > user_balance){
