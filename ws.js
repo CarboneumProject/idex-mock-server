@@ -40,7 +40,7 @@ wss.on('connection', function connection(ws) {
       let ret = await exchange.adminWithdraw(
         payload['payload']['token'],
         payload['payload']['amount'],
-        payload['payload']['address'],
+        payload['payload']['user'],
         payload['payload']['nonce'],
         payload['payload']['v'],
         payload['payload']['r'],
