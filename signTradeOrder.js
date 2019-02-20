@@ -1,5 +1,6 @@
 const exchange = require('./model/exchange');
 const {bufferToHex} = require('ethereumjs-util');
+let request = require("request");
 const Web3 = require('web3');
 let w3 = new Web3();
 
@@ -26,3 +27,16 @@ console.log(order['address']);
 console.log('\t\t\t\t\tV');
 console.log(address.toLowerCase());
 
+
+
+let options = { method: 'POST',
+  url: 'http://rinkeby-api.carbonradars.io/idex-api/order',
+  headers: { 'content-type': 'application/json' },
+  body: order,
+  json: true };
+
+request(options, function (error, response, body) {
+  if (error) throw new Error(error);
+
+  console.log(body);
+});
