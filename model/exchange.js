@@ -11,7 +11,7 @@ const {
 
 const {mapValues} = require('lodash');
 const providerWithMnemonic = (mnemonic, rpcEndpoint) =>
-  new HDWalletProvider(mnemonic, rpcEndpoint);
+  new HDWalletProvider(mnemonic, rpcEndpoint, 0, 1, false);
 const infuraProvider = network => providerWithMnemonic(
   process.env.MNEMONIC || '',
   `https://${network}.infura.io/v3/${process.env.INFURA_API_KEY}`,
