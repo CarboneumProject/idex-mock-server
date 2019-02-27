@@ -14,7 +14,7 @@ const providerWithMnemonic = (mnemonic, rpcEndpoint) =>
   new HDWalletProvider(mnemonic, rpcEndpoint, 0, 1, false);
 const infuraProvider = network => providerWithMnemonic(
   process.env.MNEMONIC || '',
-  `https://${network}.infura.io/v3/${process.env.INFURA_API_KEY}`,
+  process.env.RPC_URL || `https://${network}.infura.io/v3/${process.env.INFURA_API_KEY}`,
 );
 
 const contractAddress = process.env.IDEX_ADDRESS || '0xb583ef86fbaa630a67b62435ee797cb5ae4cc7e1';
