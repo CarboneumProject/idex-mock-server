@@ -399,6 +399,7 @@ router.post('/trade', async (req, res, next) => {
 
 router.post('/withdraw', async (req, res, next) => {
   try {
+    res.status(200);
     let ret = await exchange.adminWithdraw(
       req.body['token'],
       req.body['amount'],
@@ -412,7 +413,6 @@ router.post('/withdraw', async (req, res, next) => {
     console.log(ret);
   } catch (e) {
     console.error(e);
-    res.status(403);
     return res.send({
       "error": "Invalid withdrawal signature. Please try again."
     });
