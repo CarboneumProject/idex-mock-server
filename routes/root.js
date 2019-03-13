@@ -400,6 +400,7 @@ router.post('/trade', async (req, res, next) => {
 router.post('/withdraw', async (req, res, next) => {
   try {
     res.status(200);
+    res.send({'status': 'yes', 'message': 'withdraw pending.'});
     let ret = await exchange.adminWithdraw(
       req.body['token'],
       req.body['amount'],
