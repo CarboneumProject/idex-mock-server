@@ -48,10 +48,26 @@ router.post('/return24Volume', async (req, res, next) => {
 router.post('/returnBalances', async (req, res, next) => {
   try {
 
-    res.send({
-      "ETH": (await exchange.balanceOf('0x0000000000000000000000000000000000000000', req.body['address'])).toString(),
-      "C8": (await exchange.balanceOf('0xd42debe4edc92bd5a3fbb4243e1eccf6d63a4a5d', req.body['address'])).toString(),
-    });
+    let ethBalance = (await exchange.balanceOf('0x0000000000000000000000000000000000000000', req.body['address'])).toString();
+    let c8Balance = (await exchange.balanceOf('0xd42debe4edc92bd5a3fbb4243e1eccf6d63a4a5d', req.body['address'])).toString();
+
+    if (ethBalance === 0) {
+      res.send({
+        "C8": c8Balance,
+      });
+    } else if (c8Balance === 0) {
+      res.send({
+        "ETH": ethBalance,
+      });
+    } else if (c8Balance === 0 && ethBalance === 0) {
+      res.send({});
+    } else {
+      res.send({
+        "ETH": ethBalance,
+        "C8": c8Balance,
+      });
+    }
+
   } catch (e) {
     console.error(e);
     return res.send({'status': 'no', 'message': e.message});
