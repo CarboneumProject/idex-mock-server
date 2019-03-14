@@ -201,7 +201,7 @@ exchange.createWithdraw = function createWithdraw(token, amount) {
 exchange.balanceOf = async function balanceOf(token, user) {
   let balance = await idexContract.methods.balanceOf(token, user).call();
   console.log(balance);
-  return balance / Web3.utils.toBN(Math.pow(10, 18));
+  return  Web3.utils.fromWei(balance);
 };
 
 exchange.balanceOfWei = async function balanceOf(token, user) {
